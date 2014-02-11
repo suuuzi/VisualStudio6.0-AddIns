@@ -27,11 +27,11 @@ Sub SwitchHeaderCppVs6()
 	ElseIf sExt = "c" or sExt = "cpp" or sExt = "cxx" Then
 		sFile = sFile & ".h"
 	Else
-		MsgBox "Apenas .h and .cpp!", vbExclamation, "Error"
+		MsgBox "Works for .h and .cpp!", vbExclamation, "Error"
 		Exit Sub
 	End If
 
-	' verifica se já está aberto
+	' is open?
 	For Each doc In Application.Documents
 		If LCase(doc.Name) = LCase(sFile) Then
 			doc.Active = True
@@ -43,7 +43,7 @@ Sub SwitchHeaderCppVs6()
 	Documents.Open sFile
 
 	If Err.Number > 0 Then
-		MsgBox "Não encontrado", vbCritical, "Error"
+		MsgBox "File not found!", vbCritical, "Error"
 		Err.Clear
 		Exit Sub
 	End If
@@ -63,7 +63,7 @@ Function findFileWithinWorkspace(file)
 			ActiveDocument.Selection.SelectLine
 			sLine = ActiveDocument.Selection
 			ActiveDocument.Close
-			sLine = Left(sLine, Len(sLine) - 2)		' del LF & CR
+			sLine = Left(sLine, Len(sLine) - 2)	' del LF & CR
 			sLine = Right(sLine, Len(sLine) - 8)	' del SOURCE=.\
 			
 			If Left(sLine, 1) <> "." Then
