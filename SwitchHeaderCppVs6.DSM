@@ -1,0 +1,113 @@
+' 10/02/14 Alternar entre .cpp e .h no Visual Studio 6.0
+
+Sub SwitchHeaderCppVs6()
+	On Error Resume Next
+	Dim sExt, sFile
+	
+	sExt = fileExtension(ActiveDocument.FullName)
+	sFile = Left(ActiveDocument.Name, Len(ActiveDocument.Name) - Len(sExt) - 1)
+
+	If sExt = "h" or sExt = "hpp" or sExt = "hxx" Then
+		sFile = sFile & ".cpp"
+	ElseIf sExt = "c" or sExt = "cpp" or sExt = "cxx" Then
+		sFile = sFile & ".h"
+	Else
+		MsgBox "Apenas .h and .cpp!", vbExclamation, "Error"
+		Exit Sub
+	End If
+
+	' verifica se já está aberto
+	For Each doc In Application.Documents
+		If LCase(doc.Name) = LCase(sFile) Then
+			doc.Active = True
+			Exit Sub
+		End If
+	Next
+
+	sFile = findFileWithinWorkspace(sFile)
+	Documents.Open sFile
+
+	If Err.Number > 0 Then
+		MsgBox "Não encontrado", vbCritical, "Error"
+		Err.Clear
+		Exit Sub
+	End If
+
+End Sub
+
+
+Function findFileWithinWorkspace(file)
+	Dim project, bFound, sLine
+	sLine = Null
+
+	For Each project In Application.Projects
+		Documents.Open project.FullName, "Text", True
+		bFound = ActiveDocument.Selection.FindText(file, dsMatchFromStart + dsMatchRegExp)
+
+		If bFound = True Then
+			ActiveDocument.Selection.SelectLine
+			sLine = ActiveDocument.Selection
+			ActiveDocument.Close
+			sLine = Left(sLine, Len(sLine) - 2)		' del LF & CR
+			sLine = Right(sLine, Len(sLine) - 8)	' del SOURCE=.\
+			
+			If Left(sLine, 1) <> "." Then
+				sLine = filePath(project.FullName) & sLine
+			End If
+			
+			Exit For
+		End If
+
+		ActiveDocument.Close
+	Next
+
+	findFileWithinWorkspace = sLine
+End Function
+
+
+Function fileExtension(file)
+	Dim iPos, iDot
+	
+	iDot = Null
+	Do While True
+		iPos = Instr(1, file, ".", 1)
+		If iPos = 0 or iPos = Null Then
+			Exit Do
+		Else
+			file = Right(file, Len(file) - iPos)
+			iDot = iPos
+		End If
+	Loop
+
+	If iDot = Null Then
+		fileExtension = ""
+	Else
+		fileExtension = LCase(file)
+	End If
+
+End Function
+
+
+Function filePath(file)
+	Dim iPos, iBS, strPath
+	
+	strPath = file
+	iBS = Null
+
+	Do While True
+		iPos = Instr(1, file, "\", 1)
+		If iPos = 0 or iPos = Null Then
+			Exit Do
+		Else
+			file = Right(file, Len(file) - iPos)
+			iBS = iPos
+		End If
+	Loop
+
+	If iBS = Null Then
+		filePath = ""
+	Else
+		filePath = Left(strPath, Len(strPath) - Len(file) - 1)
+	End If
+
+End Function
