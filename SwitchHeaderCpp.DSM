@@ -1,4 +1,4 @@
-Sub SwitchHeaderCppVs6()
+Sub SwitchHeaderCpp()
 	On Error Resume Next
 	Dim sExt, sFile
 	
