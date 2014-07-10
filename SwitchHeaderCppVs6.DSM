@@ -1,20 +1,3 @@
-Sub QuickOpenFile()
-	On Error Resume Next
-	Dim sExt, sFile, strName
-
-	strName = InputBox("File/class name:", "Open file or class")
-
-	sFile = findFileWithinWorkspace(strName)
-	Documents.Open sFile
-
-	If Err.Number > 0 Then
-		MsgBox "File not found", vbCritical, "Error"
-		Err.Clear
-		Exit Sub
-	End If
-
-End Sub
-
 Sub SwitchHeaderCppVs6()
 	On Error Resume Next
 	Dim sExt, sFile
