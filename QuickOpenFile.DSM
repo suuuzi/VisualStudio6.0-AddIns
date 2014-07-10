@@ -1,0 +1,44 @@
+Sub QuickOpenFile()
+	On Error Resume Next
+	Dim sExt, sFile, strName
+
+	strName = InputBox("File/class name:", "Open file or class")
+
+	sFile = findFileWithinWorkspace(strName)
+	Documents.Open sFile
+
+	If Err.Number > 0 Then
+		MsgBox "File not found", vbCritical, "Error"
+		Err.Clear
+		Exit Sub
+	End If
+
+End Sub
+
+Function findFileWithinWorkspace(file)
+	Dim project, bFound, sLine
+	sLine = Null
+
+	For Each project In Application.Projects
+		Documents.Open project.FullName, "Text", True
+		bFound = ActiveDocument.Selection.FindText(file, dsMatchFromStart + dsMatchRegExp)
+
+		If bFound = True Then
+			ActiveDocument.Selection.SelectLine
+			sLine = ActiveDocument.Selection
+			ActiveDocument.Close
+			sLine = Left(sLine, Len(sLine) - 2)	' del LF & CR
+			sLine = Right(sLine, Len(sLine) - 8)	' del SOURCE=.\
+
+			If Left(sLine, 1) <> "." Then
+				sLine = filePath(project.FullName) & sLine
+			End If
+
+			Exit For
+		End If
+
+		ActiveDocument.Close
+	Next
+
+	findFileWithinWorkspace = sLine
+End Function
