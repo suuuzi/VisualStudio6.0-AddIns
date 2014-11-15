@@ -2,7 +2,7 @@ Visual Studio 6.0 - AddIns
 =================================
 
 * Open a file from a dialog box
-* Switch between header and imnplementation using a keyboard shortcut
+* Switch between header and implementation using a keyboard shortcut
 
 <b>How to use</b><br>
 
